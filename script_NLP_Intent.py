@@ -35,7 +35,7 @@ ytest = np.array(ytest)
 
 #convert all abstracts to sequences of integers key stored in idx_word
 tokenizer = keras.preprocessing.text.Tokenizer(num_words=50,
-                                               filters='?!":;,.#$&()*+-<=>@[\\]^_`{|}~\t\n',
+                                               filters="?!':;,.#$&()*+-<=>@[\\]^_`{|}~\t\n",
                                                lower=True, split=' ')
 tokenizer.fit_on_texts(Xtrain)
 #assign number to each word
