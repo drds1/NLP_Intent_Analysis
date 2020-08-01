@@ -9,3 +9,7 @@ https://towardsdatascience.com/natural-language-understanding-with-sequence-to-s
 
 
 https://medium.com/@bedigunjit/simple-guide-to-text-classification-nlp-using-svm-and-naive-bayes-with-python-421db3a72d34
+
+
+
+https://towardsdatascience.com/recurrent-neural-networks-by-example-in-python-ffd204f99470

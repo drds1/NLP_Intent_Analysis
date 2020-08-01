@@ -8,18 +8,16 @@ dftest = pd.read_csv('./data/datasets_117486_281522_atis.test.csv')
 Xtest, ytest = list(dftest.values[:,1]), list(dftest.values[:,-1])
 ytest = pd.get_dummies(ytest)
 
+#convert all abstracts to sequences of integers key stored in idx_word
 tokenizer = keras.preprocessing.text.Tokenizer(num_words=50,
                                                filters='?!":;,.#$&()*+-<=>@[\\]^_`{|}~\t\n',
                                                lower=True, split=' ')
-
-#tokenise the input
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
-count_vect = CountVectorizer()
-Xtrain_counts = count_vect.fit_transform(Xtrain)
-tfidf_transformer = TfidfTransformer()
-tfidf_transformer.fit(Xtrain_counts)
-Xtrain_tfidf = tfidf_transformer.transform(Xtrain_counts)
+tokenizer.fit_on_texts(Xtrain)
+#assign number to each word
+Xtrain_sequence = tokenizer.texts_to_sequences(Xtrain)
+#padd the sequences of short sentences with 0s so everything is the same length
+Xtrain_sequence = keras.preprocessing.sequence.pad_sequences(Xtrain_sequence)
+idx_word = tokenizer.index_word
 
 
 #model_lstm = keras.Sequential()
