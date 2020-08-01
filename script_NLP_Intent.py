@@ -41,7 +41,8 @@ tokenizer.fit_on_texts(Xtrain)
 #assign number to each word
 Xtrain_sequence = tokenizer.texts_to_sequences(Xtrain)
 #padd the sequences of short sentences with 0s so everything is the same length
-Xtrain_sequence = keras.preprocessing.sequence.pad_sequences(Xtrain_sequence)
+Xtrain_sequence = keras.preprocessing.sequence.pad_sequences(Xtrain_sequence,
+                                                             padding='post')
 
 idx_word = tokenizer.index_word
 num_words = len(idx_word) + 1
@@ -101,7 +102,9 @@ model_lstm.fit(Xtrain_sequence, ytrain,epochs=5)
 
 ##predict values for testing
 Xtest_sequence = tokenizer.texts_to_sequences(Xtest)
-Xtest_sequence = keras.preprocessing.sequence.pad_sequences(Xtest_sequence,maxlen = Xtrain_sequence.shape[1])
+Xtest_sequence = keras.preprocessing.sequence.pad_sequences(Xtest_sequence,
+                                                            maxlen = Xtrain_sequence.shape[1],
+                                                            padding='post')
 
 
 eval_lstm = model_lstm.evaluate(Xtest_sequence, ytest)
