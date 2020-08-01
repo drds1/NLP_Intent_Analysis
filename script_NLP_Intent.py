@@ -96,15 +96,13 @@ model_lstm.compile(
 model_lstm.summary()
 
 ##fit
-model_lstm.fit(Xtrain_sequence, ytrain)
+model_lstm.fit(Xtrain_sequence, ytrain,epochs=5)
 
 
 ##predict values for testing
 Xtest_sequence = tokenizer.texts_to_sequences(Xtest)
-Xtest_sequence = keras.preprocessing.sequence.pad_sequences(Xtest_sequence)
+Xtest_sequence = keras.preprocessing.sequence.pad_sequences(Xtest_sequence,maxlen = Xtrain_sequence.shape[1])
 
 
 eval_lstm = model_lstm.evaluate(Xtest_sequence, ytest)
-ypred = model_lstm.predict(Xtest_sequence, ytest)
-#history_lstm = model_lstm.fit(input_data_train, intent_data_label_cat_train,
-#                              epochs=10,batch_size=BATCH_SIZE)
+ypred = model_lstm.predict(Xtest_sequence)
