@@ -66,8 +66,11 @@ for i, word in enumerate(idx_word.keys()):
 #wordvec_dim = 100
 model_lstm = keras.Sequential()
 #initialise Ebedding layer num_words = len(idx_word) + 1 to deal with 0 padding
+#input_length is the number of words ids per sample e.g 28
+# NOT the sample size of the training data
+# you do not need to supply that info
 model_lstm.add(keras.layers.Embedding(input_dim=num_words,
-                                      input_length=len(Xtrain_sequence),
+                                      input_length=Xtrain_sequence.shape[1],
                                       output_dim=wordvec_dim,
                                       weights=[embedding_matrix],
                                       trainable=False,
