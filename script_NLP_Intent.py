@@ -109,3 +109,43 @@ Xtest_sequence = keras.preprocessing.sequence.pad_sequences(Xtest_sequence,
 
 eval_lstm = model_lstm.evaluate(Xtest_sequence, ytest)
 ypred = model_lstm.predict(Xtest_sequence)
+
+
+'''
+
+        input1 = Input(shape=(max_words,))
+        embedding_layer1 = Embedding(top_word, 100, weights=[embedding_matrix], input_length=max_words,
+                                     trainable=False)(input1)
+        dropout1 = Dropout(0.2)(embedding_layer1)
+        lstm1_1 = LSTM(128, return_sequences=True)(dropout1)
+        lstm1_2 = LSTM(128, return_sequences=True)(lstm1_1)
+        lstm1_2a = LSTM(128, return_sequences=True)(lstm1_2)
+        lstm1_3 = LSTM(128)(lstm1_2a)
+
+        input2 = Input(shape=(max_words_ky,))
+        embedding_layer2 = Embedding(top_word, 100, weights=[embedding_matrix], input_length=max_words_ky,
+                                     trainable=False)(
+            input2)
+        dropout2 = Dropout(0.2)(embedding_layer2)
+        lstm2_1 = LSTM(64, return_sequences=True)(dropout2)
+        lstm2_2 = LSTM(64, return_sequences=True)(lstm2_1)
+        lstm2_3 = LSTM(64)(lstm2_2)
+
+        input3 = Input(shape=(max_words_lc,))
+        embedding_layer3 = Embedding(top_word, 100, weights=[embedding_matrix], input_length=max_words_lc,
+                                     trainable=False)(
+            input3)
+        dropout3 = Dropout(0.2)(embedding_layer3)
+        lstm3_1 = LSTM(32, return_sequences=True)(dropout3)
+        lstm3_2 = LSTM(32, return_sequences=True)(lstm3_1)
+        lstm3_3 = LSTM(32)(lstm3_2)
+
+        merge = concatenate([lstm1_3, lstm2_3, lstm3_3])
+
+        dropout = Dropout(0.8)(merge)
+        dense1 = Dense(256, activation='relu')(dropout)
+        dense2 = Dense(128, activation='relu')(dense1)
+        output = Dense(2, activation='softmax')(dense2)
+        model = Model(inputs=[input1, input2, input3], outputs=output)
+        model.summary()
+'''
