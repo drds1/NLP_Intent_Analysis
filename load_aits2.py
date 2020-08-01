@@ -89,6 +89,9 @@ model_lstm.add(keras.layers.Dense(nlabels,activation = 'softmax' ))
 model_lstm.compile(
     optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
+# model summary
+model_lstm.summary()
+
 ##fit
 model_lstm.fit(Xtrain_sequence, ytrain)
 
@@ -97,7 +100,8 @@ model_lstm.fit(Xtrain_sequence, ytrain)
 Xtest_sequence = tokenizer.texts_to_sequences(Xtest)
 Xtest_sequence = keras.preprocessing.sequence.pad_sequences(Xtest_sequence)
 
-eval = model_lstm.evaluate(Xtest_sequence, ytest)
+
+eval_lstm = model_lstm.evaluate(Xtest_sequence, ytest)
 ypred = model_lstm.predict(Xtest_sequence, ytest)
 #history_lstm = model_lstm.fit(input_data_train, intent_data_label_cat_train,
 #                              epochs=10,batch_size=BATCH_SIZE)
