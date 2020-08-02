@@ -77,14 +77,23 @@ model_lstm.add(keras.layers.Embedding(input_dim=num_words,
                                       trainable=False,
                                       mask_zero=True))
 
+#just test embedding layer
+#model_lstm.compile('rmsprop', 'mse')
+#embedding_test = model_lstm.predict(Xtrain_sequence)
+#Xtrain_sequence.shape ... (4274, 28)
+#embedding_test.shape ... (4274, 28. 100) i.e. each word converted to 100d vector
+
+
 #words which are not in the pretrained embeddings (with value 0) are ignored
 model_lstm.add(keras.layers.Masking(mask_value = 0.0))
 
 # Recurrent layer
-model_lstm.add(keras.layers.LSTM(64, activation='relu'))
+model_lstm.add(keras.layers.LSTM(128, activation='relu'))
 model_lstm.add(keras.layers.Dropout(0.2))
 model_lstm.add(keras.layers.LSTM(128, return_sequences=True))
+model_lstm.add(keras.layers.Dropout(0.2))
 model_lstm.add(keras.layers.LSTM(128, return_sequences=True))
+model_lstm.add(keras.layers.Dropout(0.2))
 model_lstm.add(keras.layers.LSTM(128, return_sequences=True))
 
 
