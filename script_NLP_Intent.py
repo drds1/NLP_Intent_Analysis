@@ -82,9 +82,14 @@ model_lstm.add(keras.layers.Masking(mask_value = 0.0))
 
 # Recurrent layer
 model_lstm.add(keras.layers.LSTM(64, activation='relu'))
+model_lstm.add(keras.layers.Dropout(0.2))
+model_lstm.add(keras.layers.LSTM(128, return_sequences=True))
+model_lstm.add(keras.layers.LSTM(128, return_sequences=True))
+model_lstm.add(keras.layers.LSTM(128, return_sequences=True))
+
 
 # Dropout for regularisation and avoid overfit
-model_lstm.add(keras.layers.Dropout(0.5))
+model_lstm.add(keras.layers.Dropout(0.2))
 
 # Output layer
 model_lstm.add(keras.layers.Dense(nlabels,activation = 'softmax' ))
