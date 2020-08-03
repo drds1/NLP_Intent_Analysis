@@ -26,19 +26,23 @@ def load_embeddings(file):
 
 dftrain = pd.read_csv('./data/datasets_117486_281522_atis.train.csv')
 Xtrain, ytrain = list(dftrain.values[:,1]), list(dftrain.values[:,-1])
+Xtrain = [Xt.replace('BOS ','').replace(' EOS','') for Xt in Xtrain]
 ytrain = pd.get_dummies(ytrain)
 labels = list(ytrain.columns)
 nlabels = len(labels)
 ytrain = np.array(ytrain)
 dftest = pd.read_csv('./data/datasets_117486_281522_atis.test.csv')
 Xtest, ytest = list(dftest.values[:,1]), list(dftest.values[:,-1])
+Xtest = [Xt.replace('BOS ','').replace(' EOS','') for Xt in Xtest]
 ytest = pd.get_dummies(ytest)
 ytest = np.array(ytest)
 
 #convert all abstracts to sequences of integers key stored in idx_word
-tokenizer = keras.preprocessing.text.Tokenizer(num_words=50,
+tokenizer = keras.preprocessing.text.Tokenizer(num_words=2,
                                                filters="?!':;,.#$&()*+-<=>@[\\]^_`{|}~\t\n",
                                                lower=True, split=' ')
+
+
 tokenizer.fit_on_texts(Xtrain)
 #assign number to each word
 Xtrain_sequence = tokenizer.texts_to_sequences(Xtrain)
@@ -89,47 +93,46 @@ model_lstm.add(keras.layers.Embedding(input_dim=num_words,
 #words which are not in the pretrained embeddings (with value 0) are ignored
 load_model = False
 picklefile = 'LSTM_model.pickle'
-if load_model is False:
 
-    model_lstm.add(keras.layers.Masking(mask_value = 0.0))
+model_lstm.add(keras.layers.Masking(mask_value = 0.0))
 
-    # Recurrent layer
-    model_lstm.add(keras.layers.LSTM(128, return_sequences=False))
-    #model_lstm.add(keras.layers.Dropout(0.2))
-    #model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
-    #model_lstm.add(keras.layers.Dropout(0.2))
-    #model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
-    #model_lstm.add(keras.layers.Dropout(0.2))
-    #model_lstm.add(keras.layers.LSTM(28, return_sequences=False))
+# Recurrent layer
+model_lstm.add(keras.layers.LSTM(200, return_sequences=False))
+model_lstm.add(keras.layers.Dropout(0.4))
+#model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+#model_lstm.add(keras.layers.Dropout(0.2))
+#model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+#model_lstm.add(keras.layers.Dropout(0.2))
+#model_lstm.add(keras.layers.LSTM(28, return_sequences=False))
 
 
-    # Dropout for regularisation and avoid overfit
-    #model_lstm.add(keras.layers.Dropout(0.2))
+# Dropout for regularisation and avoid overfit
+#model_lstm.add(keras.layers.Dropout(0.2))
 
-    # Output layer
-    model_lstm.add(keras.layers.Dense(nlabels))
-    model_lstm.add(keras.layers.Activation('softmax'))
+# Output layer
+model_lstm.add(keras.layers.Dense(nlabels))
+model_lstm.add(keras.layers.Activation('softmax'))
 
-    # Compile the model
-    model_lstm.compile(
-        optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+# Compile the model
+model_lstm.compile(
+    optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    # model summary
-    model_lstm.summary()
+# model summary
+model_lstm.summary()
 
-    ##fit
-    model_lstm.fit(Xtrain_sequence, ytrain,epochs=5)
+##fit
+model_lstm.fit(Xtrain_sequence, ytrain,epochs=5,batch_size=128)
 
-    #save fitted model
-    picklefile = picklefile
-    os.system('rm ' + picklefile)
-    pickle_out = open(picklefile, "wb")
-    pickle.dump(model_lstm, pickle_out)
-    pickle_out.close()
-else:
-    # load previous simulation
-    pickle_in = open(picklefile, "rb")
-    model_lstm = pickle.load(pickle_in)
+#save fitted model
+picklefile = picklefile
+os.system('rm ' + picklefile)
+pickle_out = open(picklefile, "wb")
+pickle.dump(model_lstm, pickle_out)
+pickle_out.close()
+
+## load previous simulation
+#pickle_in = open(picklefile, "rb")
+#model_lstm = pickle.load(pickle_in)
 
 ##predict values for testing
 Xtest_sequence = tokenizer.texts_to_sequences(Xtest)

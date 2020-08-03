@@ -1,6 +1,7 @@
 # NLP_bert_test
 Learn to use bert word embeddings bidirectional
 
+smote imblearn
 
 https://towardsdatascience.com/bert-for-dummies-step-by-step-tutorial-fb90890ffe03
 
