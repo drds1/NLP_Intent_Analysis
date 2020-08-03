@@ -1,6 +1,8 @@
 import pandas as pd
 import keras
 import numpy as np
+import os
+import pickle
 from sklearn.metrics.pairwise import cosine_similarity
 
 
@@ -85,34 +87,48 @@ model_lstm.add(keras.layers.Embedding(input_dim=num_words,
 
 
 #words which are not in the pretrained embeddings (with value 0) are ignored
-model_lstm.add(keras.layers.Masking(mask_value = 0.0))
+load_model = False
+picklefile = 'LSTM_model.pickle'
+if load_model is False:
 
-# Recurrent layer
-model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
-#model_lstm.add(keras.layers.Dropout(0.2))
-model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
-#model_lstm.add(keras.layers.Dropout(0.2))
-model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
-#model_lstm.add(keras.layers.Dropout(0.2))
-model_lstm.add(keras.layers.LSTM(28, return_sequences=False))
+    model_lstm.add(keras.layers.Masking(mask_value = 0.0))
+
+    # Recurrent layer
+    model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+    #model_lstm.add(keras.layers.Dropout(0.2))
+    model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+    #model_lstm.add(keras.layers.Dropout(0.2))
+    model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+    #model_lstm.add(keras.layers.Dropout(0.2))
+    model_lstm.add(keras.layers.LSTM(28, return_sequences=False))
 
 
-# Dropout for regularisation and avoid overfit
-model_lstm.add(keras.layers.Dropout(0.2))
+    # Dropout for regularisation and avoid overfit
+    model_lstm.add(keras.layers.Dropout(0.2))
 
-# Output layer
-model_lstm.add(keras.layers.Dense(nlabels,activation = 'softmax' ))
+    # Output layer
+    model_lstm.add(keras.layers.Dense(nlabels,activation = 'softmax' ))
 
-# Compile the model
-model_lstm.compile(
-    optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    # Compile the model
+    model_lstm.compile(
+        optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-# model summary
-model_lstm.summary()
+    # model summary
+    model_lstm.summary()
 
-##fit
-model_lstm.fit(Xtrain_sequence, ytrain,epochs=5)
+    ##fit
+    model_lstm.fit(Xtrain_sequence, ytrain,epochs=5)
 
+    #save fitted model
+    picklefile = picklefile
+    os.system('rm ' + picklefile)
+    pickle_out = open(picklefile, "wb")
+    pickle.dump(model_lstm, pickle_out)
+    pickle_out.close()
+else:
+    # load previous simulation
+    pickle_in = open(picklefile, "rb")
+    model_lstm = pickle.load(pickle_in)
 
 ##predict values for testing
 Xtest_sequence = tokenizer.texts_to_sequences(Xtest)
