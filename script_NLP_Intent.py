@@ -94,20 +94,21 @@ if load_model is False:
     model_lstm.add(keras.layers.Masking(mask_value = 0.0))
 
     # Recurrent layer
-    model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+    model_lstm.add(keras.layers.LSTM(128, return_sequences=False))
     #model_lstm.add(keras.layers.Dropout(0.2))
-    model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+    #model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
     #model_lstm.add(keras.layers.Dropout(0.2))
-    model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+    #model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
     #model_lstm.add(keras.layers.Dropout(0.2))
-    model_lstm.add(keras.layers.LSTM(28, return_sequences=False))
+    #model_lstm.add(keras.layers.LSTM(28, return_sequences=False))
 
 
     # Dropout for regularisation and avoid overfit
-    model_lstm.add(keras.layers.Dropout(0.2))
+    #model_lstm.add(keras.layers.Dropout(0.2))
 
     # Output layer
-    model_lstm.add(keras.layers.Dense(nlabels,activation = 'softmax' ))
+    model_lstm.add(keras.layers.Dense(nlabels))
+    model_lstm.add(keras.layers.Activation('softmax'))
 
     # Compile the model
     model_lstm.compile(
@@ -141,6 +142,13 @@ eval_lstm = model_lstm.evaluate(Xtest_sequence, ytest)
 ypred = model_lstm.predict(Xtest_sequence)
 
 
+
+X0 = Xtrain_sequence[0,:]
+x00 = ''
+for x in X0:
+    x00+= idx_word.get(x,'')+' '
+print(x00)
+print(Xtrain[0])
 '''
 
         input1 = Input(shape=(max_words,))
