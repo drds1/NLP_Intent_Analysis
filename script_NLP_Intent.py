@@ -63,7 +63,6 @@ class lstm_fit():
         self.num_words = len(self.idx_word) + 1
 
 
-
     def load_word_embeddings(self, path = '../disaster_nlp/data/non_tracked/glove.6B.100d.txt'):
         '''
         sepcify path to e.g. glove word embeddings
@@ -134,56 +133,57 @@ class lstm_fit():
         self.model_lstm = model_lstm
 
 
-refit = False
-picklefile = 'LSTM_model.pickle'
-#prepare data
-if refit is True:
-    dftrain = pd.read_csv('./data/datasets_117486_281522_atis.train.csv')
-    Xtrain, ytrain = list(dftrain.values[:,1]), list(dftrain.values[:,-1])
-    Xtrain = stop_word_removal(Xtrain,words=['is', 'the', 'of', 'a'])
-    Xtrain = [Xt.replace('BOS ','').replace(' EOS','') for Xt in Xtrain]
-    ytrain = pd.get_dummies(ytrain)
-    labels = list(ytrain.columns)
-    nlabels = len(labels)
-    ytrain = np.array(ytrain)
-    dftest = pd.read_csv('./data/datasets_117486_281522_atis.test.csv')
-    Xtest, ytest = list(dftest.values[:,1]), list(dftest.values[:,-1])
-    Xtest = [Xt.replace('BOS ','').replace(' EOS','') for Xt in Xtest]
-    ytest = pd.get_dummies(ytest)
-    ytest = np.array(ytest)
+if __name__ == '__main__':
+    refit = False
+    picklefile = 'LSTM_model.pickle'
+    #prepare data
+    if refit is True:
+        dftrain = pd.read_csv('./data/datasets_117486_281522_atis.train.csv')
+        Xtrain, ytrain = list(dftrain.values[:,1]), list(dftrain.values[:,-1])
+        Xtrain = stop_word_removal(Xtrain,words=['is', 'the', 'of', 'a'])
+        Xtrain = [Xt.replace('BOS ','').replace(' EOS','') for Xt in Xtrain]
+        ytrain = pd.get_dummies(ytrain)
+        labels = list(ytrain.columns)
+        nlabels = len(labels)
+        ytrain = np.array(ytrain)
+        dftest = pd.read_csv('./data/datasets_117486_281522_atis.test.csv')
+        Xtest, ytest = list(dftest.values[:,1]), list(dftest.values[:,-1])
+        Xtest = [Xt.replace('BOS ','').replace(' EOS','') for Xt in Xtest]
+        ytest = pd.get_dummies(ytest)
+        ytest = np.array(ytest)
 
 
-    #load the lstm model and perform tokenisation and load word embeddings
-    x = lstm_fit()
-    x.Xtrain = Xtrain
-    x.Xtest = Xtest
-    x.ytrain = ytrain
-    x.ytest = ytest
-    x.labels = labels
+        #load the lstm model and perform tokenisation and load word embeddings
+        x = lstm_fit()
+        x.Xtrain = Xtrain
+        x.Xtest = Xtest
+        x.ytrain = ytrain
+        x.ytest = ytest
+        x.labels = labels
 
-    x.tokenize()
-    x.load_word_embeddings()
-    x.match_word_embeddings()
-    x.setup_net()
+        x.tokenize()
+        x.load_word_embeddings()
+        x.match_word_embeddings()
+        x.setup_net()
 
-    #save to pickle
-    picklefile = picklefile
-    os.system('rm ' + picklefile)
-    pickle_out = open(picklefile, "wb")
-    pickle.dump(x, pickle_out)
-    pickle_out.close()
-else:
-    ## load previous simulation
-    pickle_in = open(picklefile, "rb")
-    x = pickle.load(pickle_in)
+        #save to pickle
+        picklefile = picklefile
+        os.system('rm ' + picklefile)
+        pickle_out = open(picklefile, "wb")
+        pickle.dump(x, pickle_out)
+        pickle_out.close()
+    else:
+        ## load previous simulation
+        pickle_in = open(picklefile, "rb")
+        x = pickle.load(pickle_in)
 
-model_lstm = x.model_lstm
+    model_lstm = x.model_lstm
 
-Xtest_tok =  x.tokenizer.texts_to_sequences(x.Xtest)
-maxlen = x.Xtrain_sequence.shape[1]
-Xtest_seq =  keras.preprocessing.sequence.pad_sequences(Xtest_tok,
-                                                        padding='post',
-                                                        maxlen=maxlen)
-ypred_proba = model_lstm.predict(Xtest_seq)
-ypred_class = [int(np.argmax(yp)) for yp in ypred_proba]
-ypred_label = [x.labels[yp] for yp in ypred_class]
+    Xtest_tok =  x.tokenizer.texts_to_sequences(x.Xtest)
+    maxlen = x.Xtrain_sequence.shape[1]
+    Xtest_seq =  keras.preprocessing.sequence.pad_sequences(Xtest_tok,
+                                                            padding='post',
+                                                            maxlen=maxlen)
+    ypred_proba = model_lstm.predict(Xtest_seq)
+    ypred_class = [int(np.argmax(yp)) for yp in ypred_proba]
+    ypred_label = [x.labels[yp] for yp in ypred_class]
