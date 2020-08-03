@@ -7,6 +7,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 
+def stop_word_removal(xlist,words=['is', 'the', 'of', 'a']):
+    xl2 = []
+    for xl in xlist:
+        for w in words:
+            xl = xl.replace(' '+w+' ',' ')
+        xl2.append(xl)
+    return xl2
+
+
 def load_embeddings(file):
     '''
     load embeddings txt file into a dictionary
@@ -26,6 +35,7 @@ def load_embeddings(file):
 
 dftrain = pd.read_csv('./data/datasets_117486_281522_atis.train.csv')
 Xtrain, ytrain = list(dftrain.values[:,1]), list(dftrain.values[:,-1])
+Xtrain = stop_word_removal(Xtrain,words=['is', 'the', 'of', 'a'])
 Xtrain = [Xt.replace('BOS ','').replace(' EOS','') for Xt in Xtrain]
 ytrain = pd.get_dummies(ytrain)
 labels = list(ytrain.columns)
@@ -38,12 +48,15 @@ ytest = pd.get_dummies(ytest)
 ytest = np.array(ytest)
 
 #convert all abstracts to sequences of integers key stored in idx_word
-tokenizer = keras.preprocessing.text.Tokenizer(num_words=2,
+tokenizer = keras.preprocessing.text.Tokenizer(num_words=100,
                                                filters="?!':;,.#$&()*+-<=>@[\\]^_`{|}~\t\n",
                                                lower=True, split=' ')
 
 
 tokenizer.fit_on_texts(Xtrain)
+word_counts = pd.DataFrame(dict(tokenizer.word_counts),index=['word count']).transpose()
+word_counts.sort_values(by='word count',ascending = False,inplace=True)
+print(word_counts.head(10))
 #assign number to each word
 Xtrain_sequence = tokenizer.texts_to_sequences(Xtrain)
 #padd the sequences of short sentences with 0s so everything is the same length
