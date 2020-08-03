@@ -88,13 +88,13 @@ model_lstm.add(keras.layers.Embedding(input_dim=num_words,
 model_lstm.add(keras.layers.Masking(mask_value = 0.0))
 
 # Recurrent layer
-model_lstm.add(keras.layers.LSTM(128, activation='relu'))
-model_lstm.add(keras.layers.Dropout(0.2))
-model_lstm.add(keras.layers.LSTM(128, return_sequences=True))
-model_lstm.add(keras.layers.Dropout(0.2))
-model_lstm.add(keras.layers.LSTM(128, return_sequences=True))
-model_lstm.add(keras.layers.Dropout(0.2))
-model_lstm.add(keras.layers.LSTM(128, return_sequences=True))
+model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+#model_lstm.add(keras.layers.Dropout(0.2))
+model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+#model_lstm.add(keras.layers.Dropout(0.2))
+model_lstm.add(keras.layers.LSTM(28, return_sequences=True))
+#model_lstm.add(keras.layers.Dropout(0.2))
+model_lstm.add(keras.layers.LSTM(28, return_sequences=False))
 
 
 # Dropout for regularisation and avoid overfit
