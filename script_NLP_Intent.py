@@ -134,7 +134,7 @@ model_lstm.compile(
 model_lstm.summary()
 
 ##fit
-model_lstm.fit(Xtrain_sequence, ytrain,epochs=5,batch_size=128)
+#model_lstm.fit(Xtrain_sequence, ytrain,epochs=5,batch_size=128)
 
 #save fitted model
 picklefile = picklefile
@@ -154,9 +154,38 @@ Xtest_sequence = keras.preprocessing.sequence.pad_sequences(Xtest_sequence,
                                                             padding='post')
 
 
-eval_lstm = model_lstm.evaluate(Xtest_sequence, ytest)
-ypred = model_lstm.predict(Xtest_sequence)
 
+
+
+
+#test
+model_lstm2 = keras.Sequential()
+#initialise Ebedding layer num_words = len(idx_word) + 1 to deal with 0 padding
+#input_length is the number of words ids per sample e.g 28
+# NOT the sample size of the training data
+# you do not need to supply that info
+'''
+CREATE A NEW TEMP NET WHICH IS JUST THE EMBEDDING LAYER
+JUST TO SEE WHAT COMES OUT
+#ALL OUTPUTS OF EMBEDDING LAYER ARE 0 THIS IS WHY THE NET FAILS!!
+'''
+model_lstm2.add(keras.layers.Embedding(input_dim=num_words,
+                                      input_length=Xtrain_sequence.shape[1],
+                                      output_dim=wordvec_dim,
+                                      weights=[embedding_matrix],
+                                      trainable=False,
+                                      mask_zero=True))
+model_lstm2.compile(
+    optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+# model summary
+model_lstm2.summary()
+
+
+#eval_lstm = model_lstm.evaluate(Xtest_sequence, ytest)
+ypred = model_lstm2.predict(Xtest_sequence)
+#ALL OUTPUTS OF EMBEDDING LAYER ARE 0 THIS IS WHY THE NET FAILS!!
+ypred_class = [np.argmax(yp) for yp in ypred]
 
 
 X0 = Xtrain_sequence[0,:]
