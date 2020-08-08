@@ -6,7 +6,3 @@ A multiclass LSTM model with softmax output layer is used to identify the probab
 
 The model, code, approach and confusion matrix analysis are detailed in the notebook [here](https://github.com/dstarkey23/NLP_bert_test/blob/master/NLP_Intent.ipynb).
 
-
-# Confusion Matrix
-
-
