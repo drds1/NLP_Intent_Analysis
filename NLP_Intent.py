@@ -18,8 +18,21 @@ import pandas as pd
 import keras
 import numpy as np
 import utils
+import os
+import matplotlib.pylab as plt
 from sklearn.metrics.pairwise import cosine_similarity
-word_embeddings_path = '../disaster_nlp/data/non_tracked/glove.6B.100d.txt'
+
+
+# if word embeddings exist pass else download them
+word_embeddings_link = 'http://nlp.stanford.edu/data/glove.6B.zip'
+word_embeddings_unzipped_file = 'glove.6B.zip'
+word_embeddings_file = 'glove.6B.100d.txt'
+word_embeddings_path = './data_nontracked'#../disaster_nlp/data/non_tracked/glove.6B.100d.txt'
+if os.path.isdir(word_embeddings_path) is False:
+    os.system('mkdir '+word_embeddings_path)
+if os.path.isfile(word_embeddings_path+'/'+word_embeddings_file) is False:
+    os.system('wget '+word_embeddings_link+' -P '+word_embeddings_path)
+    os.system('unzip '+word_embeddings_path+'/'+word_embeddings_unzipped_file+' -d '+word_embeddings_path)
 
 # # Load train and test sample
 # 
@@ -86,7 +99,7 @@ num_words = len(idx_word) + 1
 
 
 #load in word embeddings
-embeddings_dict = utils.load_embeddings(word_embeddings_path)
+embeddings_dict = utils.load_embeddings(word_embeddings_path+'/'+word_embeddings_file)
 embeddings_words = list(embeddings_dict.keys())
 wordvec_dim = embeddings_dict[embeddings_words[0]].shape[0]
 embedding_matrix = np.zeros((num_words,wordvec_dim))
@@ -178,11 +191,42 @@ for yp in ypred:
 from sklearn import metrics
 from sklearn.metrics import ConfusionMatrixDisplay
 cm = metrics.confusion_matrix(ytest.argmax(axis=1), ypred_choices.argmax(axis=1))
-cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+cmnorm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 disp = ConfusionMatrixDisplay(confusion_matrix=cm,
                               display_labels=labels)
+plt.rcParams.update({'font.size': 7})
 # NOTE: Fill all variables here with default values of the plot_confusion_matrix
-disp = disp.plot(xticks_rotation=90,cmap='blues')
+disp = disp.plot(xticks_rotation=90,cmap='Blues')
 plt.tight_layout()
 plt.savefig('confusion_matrix.png')
 plt.show()
+
+#Now make a plot showing the F1 score (harmonic mean precision recall)
+true_pos = np.diag(cm)
+false_pos = np.sum(cm, axis = 0) - true_pos
+false_neg = np.sum(cm, axis = 1) - true_pos
+f1 = true_pos / (true_pos + 0.5*(false_pos + false_neg))
+
+fig = plt.figure()
+ax1 = fig.add_subplot(111)
+idxsort = np.argsort(f1)[-1::-1]
+x = np.arange(len(labels))
+y = f1[idxsort]
+ax1.bar(x,y,color='b')
+ax1.set_xticks(x)
+ax1.set_xticklabels(np.array(labels)[idxsort])
+ax1.set_ylabel('F1',color='b')
+ax1.spines['left'].set_color = 'blue'
+ax1.set_title('F1 metric (precision, recall harmonic mean)')
+ax1.tick_params(axis='x',rotation=90)
+ax1.tick_params(axis='y',colors='blue')
+#overplot the label counts on a second axis
+ax2 = ax1.twinx()
+counts = np.sum(cm,axis=1)
+ax2.plot(x, counts[idxsort],color='r',label='label counts')
+ax2.spines['right'].set_color = 'red'
+ax2.set_ylabel('Label Counts',color='r')
+ax2.tick_params(axis='y',colors='red')
+plt.tight_layout()
+plt.savefig('F1_score.png')
+
