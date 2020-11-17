@@ -19,7 +19,7 @@ import keras
 import numpy as np
 import utils
 from sklearn.metrics.pairwise import cosine_similarity
-
+word_embeddings_path = '../disaster_nlp/data/non_tracked/glove.6B.100d.txt'
 
 # # Load train and test sample
 # 
@@ -86,7 +86,7 @@ num_words = len(idx_word) + 1
 
 
 #load in word embeddings
-embeddings_dict = utils.load_embeddings('../disaster_nlp/data/non_tracked/glove.6B.100d.txt')
+embeddings_dict = utils.load_embeddings(word_embeddings_path)
 embeddings_words = list(embeddings_dict.keys())
 wordvec_dim = embeddings_dict[embeddings_words[0]].shape[0]
 embedding_matrix = np.zeros((num_words,wordvec_dim))
